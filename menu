@@ -1,0 +1,575 @@
+from kivy.app import App
+from kivy.lang import Builder
+from kivy.uix.floatlayout import FloatLayout
+from kivy.uix.screenmanager import ScreenManager,Screen
+from kivy.uix.gridlayout import GridLayout
+from kivy.uix.label import Label
+from random import *
+
+
+napitki = ("37ccal:","Черноплодно-рябиновый сок","Томатный сок","Сок сельдерея","Огуречный сок","Нектариновый сок","Морковный сок","Мандариновый сок","Лимонный сок","Лаймовый сок","Клубничный сок","Грушевый нектар","Грейпфрутовый сок","Бузинный сок","Березовый сок","Апельсиновый сок",
+           "38-66: ","Яблочный сок","Чай чёрный с молоком и сахаром","Чай каркаде сухой","Яблочный нектар","Черносмородиновый сок","Черносмородиновый компот","Черничный сок","Тыквенный сок","Сок петрушки","Сок папайи","Сок нони","Сок киви","Сливовый сок","Сливовый нектар","Свекольный сок","Персиковый сок","Персиковый нектар","Облепиховый сок","Нектариновый нектар","Нектар из маракуйи","Компот из сухофруктов без сахара","Клюквенный сок","Кисель из сушеных яблок","Кисель из сливового варенья","Кисель из кураги","Кисель из клюквы","Земляничный сок","Грушевый сок","Грейпфрутовый нектар","Гранатовый сок","Вишнёвый сок","Виноградный сок","Банановый сок","Арбузный сок","пельсиновый нектар","Ананасовый сок","Абрикосовый сок",
+            "67-100: ","Абрикосовый компот","Вишнёвый компот","Грушевый компот","Кисель из вишневого сока","Кисель из яблок","Малиновый сок","Персиковый компот","Сливовый компот","Черешневый компот","Шиповниковый сок","Яблочный компот",
+            "101-700: ","Горячий шоколад","Какао тёртое","Кофе мокаччино")
+chaiandcofe = ("(0)3-43:","Чай без сахара","Чай с молоком","Чай с лимоном","Чай с сахаром","Эсперссо","Кофе чёрный без сахара",
+               "(7)44-118:","Капучино растворимый","Кофе со сгущённым молоком","Кофе с молоком","Кофе растворимый",
+               "(12)119-331:","Кофе Латте","Кофе натуральный молотый","Кофе жареный в зёрнах")
+
+salat=("(0)22-58: ","Салат из помидоров,огурцов и перца","Салат из помидоров и огурцов со сметаной","Салат из свежей капусты с яблоками","Квашенная капуста","Салат из квашеной капусты и свеклы",
+       "(6)70-102: ","Салат с крабовыми палочками и кукурузой","Винегрет с сельдью","Винегред овощной","Помидоры с чесноком","Редиска со сметаной",
+       "(12)144- 200: ","Салат из помидор и огурцов с майонезом","Салат греческий","Салат оливье с колбасой","Селёдка под шубой","Салат нежность",
+       "(18)250-323: ","Салат столичный","Салат Цезарь","Салат Мимоза","Салат Кремлёвский","Салат из свеклы , с черносливом ,орехами и чесноком")
+
+kasha = ("(0)22-83: ","Спаржа отварная","Картофель отварной в мундире","Картофельное пюре на воде","Ячневая каша на воде","Горховая каша на воде",
+         "(6)96-132: ","Геркулесовая каша на воде","Гречневая каша на воде","Пшённая каша на воде","Кукурузная каша на воде","Перловка варёная","Рис вареный","Фасоль вареная","Картофельное пюре на молоке","Макароны отварные",
+         "(16)198-220: ","Картофель жареный","Пшённая каша с тыквой на молоке","Рисовая каша на молоке","Манная каша на молоке","Овсяная каша на молоке","Гречневая каша на молоке")
+
+soups = ("(0)12-29: ","Бульон овощной","Бульон куриный","Бульон говяжий","Бульон свиной","Щи из квашеной капусты",
+        "(6)30-54: ","Тыквенный суп-пюре","Суп гороховый","Куриный суп с картошкой","Борщ овощной постный","Щи из свежей капусты постные",
+        "(12)55-73: ","фасолевый суп","рассольник с перловкой на мясном бульоне","Суп грибной с картошкой","Куриный суп с лапшой","Борщ овощной с зажаркой",
+        "(18)84-114: ","Грибной крем-суп","Суп с мясными фрикадельками","Щи с курицей","Щи с говядиной","Щи со свининой",
+        "(24)128-168: ","Борщ с курицей","Борщ с говядиной","Борщ со свининой","Солянка мясная сборная","(29)")
+
+doublebludo = ("(0)87-151: ","Котлеты рыбные на пару","Котлеты из индейки на пару","Котлеты куриные на пару","Гуляш из говядины","Котлеты рыбные жареные","Котлеты из говядины на пару","Печень тушёная в сметане","Треска жареная","Горбуша запечённая","Капуста тушёная с мясом","Вареники с капустой","Роллы Филадельфия",
+               "(13)152-222: ","Роллы Калифорния","Вареники с творогом","Вареники с картошкой","Плов с говядиной","Плов с курицей","Тефтели с рисом","Сёмга на пару","Минтай жареный в кляре","Печень жареная с луком","Фаршированые перцы","Голубцы с фаршем и рисом","Говядина тушёная","Курица гриль или запечёная в духовке","Отбивная курица","Котлеты из свининны на пару","Котлеты куриные жареные",
+               "(30)223-295: ","гамбургер","Пельмени домашние","Плос со свининой","Мясо по-французски","Свинина тушёная или на пару","Отбивная свинина","Гуляш из свинины")
+
+fructs = ("(0)33-45: ","Абрикос","Грейпфрут","Апельсин","Арбуз","Груша","Дыня","Лайм","Лимон","Мандарин","Помело","Персик","Яблоко",
+          "(13)46-67: ","Ананас","Виноград","Гранат","Манго","Нектарин","Папайя",
+          "(20)87-184","Авокадо","Банан")
+
+
+class ScreenManagement(ScreenManager):
+    pass
+
+class CustomLayout(FloatLayout):
+    pass
+
+class MainScreen(Screen):
+    pass
+
+
+def ccals(ves, year):
+    return 10 * ves - 5 * year + 5
+
+
+def z(rost):
+    return (25 * rost) / 4
+
+
+
+pol = "мужчина"
+
+
+if pol == "мужчина":
+
+    food = randint(2,4)
+    year = randint(13,49)
+    ves = randint(56,79)
+    rost = randint(165,180)
+
+    z = z(rost)
+    ccalm = ccals(ves, year) + z
+    ccalm = ccalm * 69/40
+
+    if food == 2:
+
+        zavtrac = (ccalm * 2) / 5
+        obed = (ccalm * 3) / 5
+        print("zavtrac: ")
+
+        zavtrac = (round(zavtrac))
+        napi = zavtrac / 8
+        kash = zavtrac - (round(napi))
+        if napi <= 37:
+            k = randint(1, 15)
+            print(napitki[k])
+        elif napi >= 38 and napi <= 66:
+            k = randint(17, 53)
+            print(napitki[k])
+        elif napi >= 67 and napi <= 100:
+            k = randint(55, 65)
+            print(napitki[k])
+        elif napi >= 101 and napi <= 700:
+            k = randint(67, 69)
+            print(napitki[k])
+
+        if kash >= 22 and kash <= 83:
+            n = randint(1, 5)
+            print(kasha[n])
+        elif kash >= 96 and kash <= 132:
+            n = randint(7, 15)
+            print(kasha[n])
+        elif kash >= 198:
+            n = randint(17, 22)
+            print(kasha[n])
+
+        print("obed: ")
+        obed = (round(obed))
+
+        soup = (obed * 1) / 34
+        salats= (obed * 2) / 20
+        nepitki = obed / 60
+
+        if nepitki <= 37:
+            res = randint(1, 15)
+            print(napitki[res])
+        elif nepitki >= 38 and nepitki <= 66:
+            res = randint(17, 53)
+            print(napitki[res])
+        elif nepitki >= 67 and nepitki <= 100:
+            res = randint(55, 65)
+            print(napitki[res])
+        elif nepitki >= 101:
+            res = randint(67, 69)
+            print(napitki[res])
+
+        if salats >= 22 and salats <= 58:
+                gr = randint(1, 5)
+                print(salat[gr])
+        elif salats >= 70 and salats <= 102:
+                gr = randint(7, 11)
+                print(salat[gr])
+        elif salats >= 144 and salats <= 200:
+                gr = randint(13, 17)
+                print(salat[gr])
+        elif salats >= 250 and salats <= 323:
+                gr = randint(19, 24)
+                print(salat[gr])
+
+        if soup >= 12 and soup <= 29:
+            ge = randint(1, 5)
+            print(soups[ge])
+        elif soup >= 30 and soup <= 54:
+            ge = randint(7, 11)
+            print(soups[ge])
+        elif soup >= 55 and soup <= 73:
+            ge = randint(13, 17)
+            print(soups[ge])
+        elif soup >= 84 and soup <= 114:
+            ge = randint(19, 23)
+            print(soups[ge])
+        elif soup >= 128 and soup <= 168:
+            ge = randint(25, 28)
+            print(soups[ge])
+
+
+    elif food == 3:
+
+        zavtrac = (ccalm * 3) / 20
+        obed = ccalm / 4
+        ushin = ccalm / 20
+
+        print("Zavtrac: ")
+
+        zavtrac = (round(zavtrac))
+        napi = zavtrac / 8
+        napi = round(napi)
+        kash = (zavtrac * 7) / 8
+        kash = round(kash)
+
+        if napi >= 20 and napi <= 39:
+            k = randint(1, 15)
+            print(napitki[k])
+        elif napi >= 40 and napi <= 66:
+            k = randint(17, 53)
+            print(napitki[k])
+        elif napi >= 67 and napi <= 100:
+            k = randint(55, 65)
+            print(napitki[k])
+        elif napi >= 101 and napi <= 700:
+            k = randint(67, 69)
+            print(napitki[k])
+
+        if kash >= 22 and kash <= 83:
+            n = randint(1, 5)
+            print(kasha[n])
+        elif kash >= 96 and kash <= 132:
+            n = randint(7, 15)
+            print(kasha[n])
+        elif kash >= 198:
+            n = randint(17, 22)
+            print(kasha[n])
+
+        print("Obed: ")
+        obed = (round(obed))
+        soup = obed / 11
+        soup = round(soup)
+        salats = (obed * 1) / 11
+        double = (obed * 1) / 2
+        wather = obed / 8
+        wather = round(wather)
+
+        if wather >= 20 and wather <= 39:
+            ke = randint(1, 15)
+            print(napitki[ke])
+        elif wather >= 40 and wather <= 66:
+            ke = randint(17, 53)
+            print(napitki[ke])
+        elif wather >= 67 and wather <= 100:
+            ke = randint(55, 65)
+            print(napitki[ke])
+        elif wather >= 101 and wather <= 700:
+            ke = randint(67, 69)
+            print(napitki[ke])
+
+        if soup >= 12 and soup <= 29:
+            ge = randint(1, 5)
+            print(soups[ge])
+        elif soup >= 30 and soup <= 54:
+            ge = randint(7, 11)
+            print(soups[ge])
+        elif soup >= 55 and soup <= 73:
+            ge = randint(13, 17)
+            print(soups[ge])
+        elif soup >= 84 and soup <= 114:
+            ge = randint(19, 23)
+            print(soups[ge])
+        elif soup >= 128 and soup <= 168:
+            ge = randint(25, 28)
+            print(soups[ge])
+
+        salats = round(salats)
+
+        if salats >= 22 and salats <= 58:
+            gr = randint(1, 5)
+            print(salat[gr])
+        elif salats >= 59 and salats <= 102:
+            gr = randint(7, 11)
+            print(salat[gr])
+        elif salats >= 103 and salats <= 200:
+            gr = randint(13, 17)
+            print(salat[gr])
+        elif salats >= 250 and salats <= 323:
+            gr = randint(19, 24)
+            print(salat[gr])
+
+        double = round(double)
+
+        if double >= 174 and double <= 302:
+            gt = randint(1, 12)
+            print(doublebludo[gt])
+        elif double >= 304 and double <= 444:
+            gt = randint(14, 29)
+            print(doublebludo[gt])
+        elif double >= 446 and double <= 590:
+            gt = randint(31, 37)
+            print(doublebludo[gt])
+
+        print("ushin: ")
+
+        ushin = (round(ushin))
+        salats = ushin / 4
+        fruct = ushin / 3
+        chais = ushin / 3
+        fruct = round(fruct)
+        chais = round(chais)
+
+        if chais >= 3 and chais <= 43:
+            hps = randint(1, 6)
+            print(chaiandcofe[hps])
+        elif chais >= 44 and chais <= 118:
+            hps = randint(8, 11)
+            print(chaiandcofe[hps])
+        elif chais >= 119 and chais <= 331:
+            hps = randint(13, 15)
+            print(chaiandcofe[hps])
+
+        salats = round(salats)
+
+        if salats >= 22 and salats <= 58:
+            gro = randint(1, 5)
+            print(salat[gro])
+        elif salats >= 59 and salats <= 102:
+            gro = randint(7, 11)
+            print(salat[gro])
+        elif salats >= 144 and salats <= 200:
+            gro = randint(13, 17)
+            print(salat[gro])
+        elif salats >= 250 and salats <= 323:
+            gro = randint(19, 24)
+            print(salat[gro])
+
+        if fruct >= 33 and fruct <= 45:
+            gi = randint(1, 12)
+            print(fructs[gi])
+        elif fruct >= 46 and fruct <= 67:
+            gi = randint(14, 19)
+            print(fructs[gi])
+        elif fruct >= 68 and fruct <= 184:
+            gi = randint(21, 22)
+            print(fructs[gi])
+    elif food == 4:
+
+        zavtrac = (ccalm * 3) / 20
+        zavtrac2 = ccalm / 12
+        obed = (ccalm * 3) / 5
+        ushin = (ccalm * 1) / 20
+
+        print("zavtrac: ")
+
+        zavtrac = (round(zavtrac))
+        napi = zavtrac / 11
+        napi = round(napi)
+        kash = (zavtrac * 10) / 11
+        kash = round(kash)
+
+        if napi >= 20 and napi <= 39:
+            k = randint(1, 15)
+            print(napitki[k])
+        elif napi >= 40 and napi <= 66:
+            k = randint(17, 53)
+            print(napitki[k])
+        elif napi >= 67 and napi <= 100:
+            k = randint(55, 65)
+            print(napitki[k])
+        elif napi >= 101 and napi <= 700:
+            k = randint(67, 69)
+            print(napitki[k])
+
+        if kash >= 22 and kash <= 83:
+            n = randint(1, 5)
+            print(kasha[n])
+        elif kash >= 96 and kash <= 132:
+            n = randint(7, 15)
+            print(kasha[n])
+        elif kash >= 198:
+            n = randint(17, 22)
+            print(kasha[n])
+
+        print("zavtrac2: ")
+
+        zavtrac2 = (round(zavtrac2))
+        nepitki = zavtrac2 / 2
+        fruct = zavtrac2 / 4
+
+        if nepitki <= 37:
+            ke = randint(1, 15)
+            print(napitki[ke])
+        elif nepitki >= 38 and nepitki <= 66:
+            ke = randint(17, 53)
+            print(napitki[ke])
+        elif nepitki >= 67 and nepitki <= 100:
+            ke = randint(55, 65)
+            print(napitki[ke])
+        elif nepitki >= 101:
+            ke = randint(67, 69)
+            print(napitki[ke])
+
+        if fruct >= 33 and fruct <= 45:
+            gi = randint(1, 12)
+            print(fructs[gi])
+        elif fruct >= 46 and fruct <= 67:
+            gi = randint(14, 19)
+            print(fructs[gi])
+        elif fruct >= 68 and fruct <= 184:
+            gi = randint(21, 22)
+            print(fructs[gi])
+
+        print("obed: ")
+        obed = (round(obed))
+        soup = obed / 11
+        soup = round(soup)
+        salats = (obed * 2) / 11
+        double = (obed * 2) / 8
+        wather = obed / 8
+        wather = round(wather)
+
+        if wather >= 20 and wather <= 39:
+            kes = randint(1, 15)
+            print(napitki[kes])
+        elif wather >= 40 and wather <= 66:
+            kes = randint(17, 53)
+            print(napitki[kes])
+        elif wather >= 67 and wather <= 100:
+            kes = randint(55, 65)
+            print(napitki[kes])
+        elif wather >= 101 and wather <= 700:
+            kes = randint(67, 69)
+            print(napitki[kes])
+
+        if soup >= 12 and soup <= 29:
+            ge = randint(1, 5)
+            print(soups[ge])
+        elif soup >= 30 and soup <= 54:
+            ge = randint(7, 11)
+            print(soups[ge])
+        elif soup >= 55 and soup <= 73:
+            ge = randint(13, 17)
+            print(soups[ge])
+        elif soup >= 84 and soup <= 114:
+            ge = randint(19, 23)
+            print(soups[ge])
+        elif soup >= 128 and soup <= 168:
+            ge = randint(25, 28)
+            print(soups[ge])
+
+        salats = round(salats)
+        print(salats)
+        if salats >= 22 and salats <= 58:
+            gr = randint(1, 5)
+            print(salat[gr])
+        elif salats >= 70 and salats <= 102:
+            gr = randint(7, 11)
+            print(salat[gr])
+        elif salats >= 144 and salats <= 200:
+            gr = randint(13, 17)
+            print(salat[gr])
+        elif salats >= 250 and salats <= 323:
+            gr = randint(19, 24)
+            print(salat[gr])
+
+        double = round(double)
+
+        if double >= 174 and double <= 302:
+            gt = randint(1, 12)
+            print(doublebludo[gt])
+        elif double >= 304 and double <= 444:
+            gt = randint(14, 29)
+            print(doublebludo[gt])
+        elif double >= 446 and double <= 590:
+            gt = randint(31, 37)
+            print(doublebludo[gt])
+
+        print("ushin: ")
+
+        ushin = (round(ushin))
+        salats = ushin / 3
+        fruct = ushin / 3
+        chais = ushin / 3
+
+        chais = round(chais)
+
+        if chais >= 3 and chais <= 43:
+            hps = randint(1, 6)
+            print(chaiandcofe[hps])
+        elif chais >= 44 and chais <= 118:
+            hps = randint(8, 11)
+            print(chaiandcofe[hps])
+        elif chais >= 119 and chais <= 331:
+            hps = randint(13, 15)
+            print(chaiandcofe[hps])
+
+        salats = round(salats)
+
+        if salats >= 22 and salats <= 58:
+            gre = randint(1, 5)
+            print(salat[gre])
+        elif salats >= 70 and salats <= 102:
+            gre = randint(7, 11)
+            print(salat[gre])
+        elif salats >= 144 and salats <= 200:
+            gre = randint(13, 17)
+            print(salat[gre])
+        elif salats >= 250 and salats <= 323:
+            gre = randint(19, 24)
+            print(salat[gre])
+
+        if fruct >= 33 and fruct <= 45:
+            git = randint(1, 12)
+            print(fructs[git])
+        elif fruct >= 46 and fruct <= 67:
+            git = randint(14, 19)
+            print(fructs[git])
+        elif fruct >= 68 and fruct <= 184:
+            git = randint(21, 22)
+            print(fructs[git])
+
+
+class LoginScreen(GridLayout):
+
+    def __init__(self, **kwargs):
+        super(LoginScreen, self).__init__(**kwargs)
+        self.cols = 1
+        if food == 2:
+            self.add_widget(Label(text='Завтрак:', font_size='25sp'))
+            self.add_widget(Label(text=napitki[k]))
+            self.add_widget(Label(text=kasha[n]))
+            self.add_widget(Label(text='Обед:', font_size='25sp'))
+            self.add_widget(Label(text=napitki[res]))
+            self.add_widget(Label(text=soups[ge]))
+        if food == 3:
+            self.add_widget(Label(text = 'Завтрак:', font_size='25sp'))
+            self.add_widget(Label(text=napitki[k]))
+            self.add_widget(Label(text=kasha[n]))
+            self.add_widget(Label(text='Обед:', font_size='25sp'))
+            self.add_widget(Label(text=napitki[ke]))
+            self.add_widget(Label(text=soups[ge]))
+            self.add_widget(Label(text=salat[gr]))
+            self.add_widget(Label(text=doublebludo[gt]))
+            self.add_widget(Label(text='Ужин:', font_size='25sp'))
+            self.add_widget(Label(text=chaiandcofe[hps]))
+            self.add_widget(Label(text=salat[gro]))
+            self.add_widget(Label(text=fructs[gi]))
+        if food == 4:
+            self.add_widget(Label(text='Завтрак:', font_size='25sp'))
+            self.add_widget(Label(text=napitki[k]))
+            self.add_widget(Label(text=kasha[n]))
+            self.add_widget(Label(text='Завтрак2:', font_size='25sp'))
+            self.add_widget(Label(text=napitki[ke]))
+            self.add_widget(Label(text=fructs[gi]))
+            self.add_widget(Label(text='Обед:', font_size='25sp'))
+            self.add_widget(Label(text=napitki[kes]))
+            self.add_widget(Label(text=salat[gr]))
+            self.add_widget(Label(text=soups[ge]))
+            self.add_widget(Label(text=doublebludo[gt]))
+            self.add_widget(Label(text='Ужин:', font_size='25sp'))
+            self.add_widget(Label(text=chaiandcofe[hps]))
+            self.add_widget(Label(text=salat[gre]))
+            self.add_widget(Label(text=fructs[git]))
+
+class FuckingScreen(GridLayout):
+    pass
+
+class AnotherScreen(Screen):
+    pass
+
+presentation = Builder.load_string('''
+#: import FadeTransition kivy.uix.screenmanager.FadeTransition
+ScreenManagement:
+    transition:FadeTransition()
+    MainScreen:
+    AnotherScreen:
+
+<CustomLayout>
+    canvas.before:
+        Color:
+            rgba:1,1,1,1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+
+<MainScreen>:
+    name:"main"
+    CustomLayout:
+        Button:
+            size_hint:0.2,0.1
+            on_release: app.root.current = "other"
+            text:"Menu"
+            font_size:10
+            pos_hint:{"x":0.4,"y":0.6}
+        Button:
+            size_hint:0.2,0.1
+            on_release:app.root.current = "Exit"
+            text:"Exit"
+            font_size:10
+            pos_hint:{"x":0.4,"y":0.045752464}
+
+
+<AnotherScreen>:
+    name:"other"
+    LoginScreen:
+    Button:
+        size_hint: 0.09, 0.06
+        on_release: app.root.current = "main"
+        text: "<<"
+        font_size: 10
+        pos_hint: {"left": 1, "top": 1}
+''')
+
+class MainApp(App):
+    def build(self):
+        return presentation
+
+MainApp().run()
